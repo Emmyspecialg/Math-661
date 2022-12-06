@@ -1,0 +1,76 @@
+---
+title: "Math 660"
+output:
+  pdf_document: default
+  html_document: default
+date: "December 2022"
+theme: cerulean
+---
+
+<!-- For more info on RMarkdown see http://rmarkdown.rstudio.com/ -->
+
+## Name: Emiliana Geronimo
+
+### 1. In my simulation, I created the empirical and standard normal CDF. Firstly, my code used lambda of 10, a sample size of 2200, and a random number generator(rpois) to create data. Then with that data, I coded the equation to find Xbar. This was done 1000 times in my simulation to obtain 1000 different Xbars from 1000 different datasets. Then, I used the ecdf function to find the empirical CDF of the Xbars and plotted it. To confirm the shape of the CDF, I made a sequence of 100 points from -3 to 3 and used pnorm (gives vector of probabilites) to find the normal CDF. Overall, the points depicts the cumulative distribution function of the Xbars in my simulation. The CDF only approaches 0 to 1 because it is the probability that a random variable of X (pdf) with a given probability distribution will be discovered at a value less than or equal to that X which is shown in the left side of CLT. 
+```{r, fig.align='center'}
+n <- 2200
+lambda <- 10 
+std.X.bar <-  NULL 
+for (r in 1:1000) {
+  X <- rpois(n,lambda)
+  std.X.bar[r] <- sqrt(n)*(mean(X)-lambda)/sqrt(lambda)
+}
+
+p <- ecdf(std.X.bar)
+plot(p, main= "Empirical and Standard Normal CDF", xlab= "Xbar")
+x <- seq(-3,3,length=100)
+y <- pnorm(x) 
+lines(x,y,col='red')
+
+```
+
+### 2. The Newton-Pepys problem debated the probability of throwing a number of sixes from a certain number of dice. The answer to this question could be found using binomial distributions. However, to answer this question, I created a simulation that passed in the number of dice and the number of sixes to find the probabilites of Scenarion A, B, and C. I first created a sample (sample size of whatever dice is inputed) of numbers 1-6 with replacement. Then, I examined in each sample for n amount times, how many times the six showed up, then found the proportions for each scenario. Pepys claimed that Scenario C (of 18 dice and 3 sixes) had a greater chance of success, however he is wrong. The greatest chance of success amongst these scenarios is Scenario A (of 6 dice and 1 six). According to the solution of the Newton-Pepys problem, my simulation was supports the probabilty of Scenario A > Scenario B > Scenario C and portrayed the binomial distribution properly.
+
+```{r}
+diceroll <- function(dice,a) {
+  n <- 2000
+  b <- 0
+  for (i in 1:n) {
+    dsample <- sample(1:6, size=dice, replace=TRUE)
+    count = 0 
+    for (d in 1:dice) {
+      if (dsample[d]==6) {
+        count <- count + 1
+      }
+    }
+    if (count >= a) {
+      b <- b + 1
+    }
+  }
+  return(b/n)
+}
+```
+```{r}
+diceroll(6,1)
+diceroll(12,2)
+diceroll(18,3)
+```
+
+### 3. This function creates the inverse CDF and plots it with the exponential pdf. The inverse CDF is x = –log(1–u). My code creates random values from the exponential distribution by generating random uniform values from U(0,1) and applying the inverse CDF of the exponential.
+```{r, echo=FALSE, fig.align='center'}
+function3 <- function(n) {
+  XX <- NULL
+  for (i in 1:1000) {
+    UU <- runif(n)
+    XX[i] <- -log(1-UU[i])
+  }
+  return(XX)
+}
+
+bb <- function3(1000)
+hist(bb, freq=FALSE, main = "Histogram of Inverse CDF")
+f <-seq(0,10,length=100)
+k <-dexp(f)
+lines(f,k,col="red")
+```
+
